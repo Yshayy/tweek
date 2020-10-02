@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"net/url"
 	"time"
-	"strings"
 
 	"tweek-gateway/appConfig"
 	"tweek-gateway/externalApps"
@@ -59,8 +58,7 @@ func authorizeByUserPassword(keyEnv *appConfig.EnvInlineOrPath, basicAuthConfig 
 				http.Error(w, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 				return
 			}
-			// add hack when hosted on layerci staging env
-			if !utils.ContainsString(basicAuthConfig.RedirectURLs, redirectURL.Scheme+"://"+redirectURL.Host) && !strings.HasSuffix(redirectURL.Host, "cidemo.co") {
+			if !utils.ContainsString(basicAuthConfig.RedirectURLs, redirectURL.Scheme+"://"+redirectURL.Host) {
 				http.Error(w, "Redirect URL is invalid", http.StatusBadRequest)
 			}
 
