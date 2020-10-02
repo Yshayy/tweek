@@ -1,0 +1,23 @@
+#This is an example LayerCI configuration for Docker!
+FROM vm/ubuntu:18.04
+
+# To note: Layerfiles create entire VMs, *not* containers!
+
+# install the latest version of Docker, as in the official Docker installation tutorial.
+RUN apt-get update && \
+    apt-get install apt-transport-https ca-certificates curl software-properties-common && \
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - && \
+    add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable" && \
+    apt-get update && \
+    apt install docker-ce
+    
+RUN curl -L "https://github.com/docker/compose/releases/download/1.27.4/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+RUN chmod +x /usr/local/bin/docker-compose
+
+# copy files from the repository into this staging server
+COPY . .
+
+RUN REPEATABLE DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker-compose -f ./deployments/dev/docker-compose.yml -f ./deployments/dev/docker-compose.override.yml build
+RUN DOCKER_BUILDKIT=1 COMPOSE_DOCKER_CLI_BUILD=1 docker-compose -f ./deployments/dev/docker-compose.yml -f ./deployments/dev/docker-compose.override.yml up -d
+
+EXPOSE WEBSITE http://localhost:8081
