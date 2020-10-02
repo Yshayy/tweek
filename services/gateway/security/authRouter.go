@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"net/url"
 	"time"
+	"strings"
 
 	"tweek-gateway/appConfig"
 	"tweek-gateway/externalApps"
